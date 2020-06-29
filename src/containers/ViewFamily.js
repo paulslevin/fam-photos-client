@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./ViewFamily.css";
 import { useAppContext } from "../libs/contextLib";
 import windowSize from "react-window-size";
+import { imageURLsByFamilyURL } from "../constants/Constants";
 
 function ViewFamily(props) {
   const { families } = useAppContext();
@@ -13,19 +14,14 @@ function ViewFamily(props) {
 
   useEffect(() => {
     function getImageURLsByFamily() {
-      fetch(
-        new URL(
-          "http://fam-photos-env.eba-m3urgmky.eu-west-2.elasticbeanstalk.com:80/api/image_urls"
-        ),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(family),
-        }
-      )
+      fetch(new URL(imageURLsByFamilyURL), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(family),
+      })
         .then((response) => response.json())
         .then((data) => {
           setImageURLs(data);
