@@ -1,0 +1,10 @@
+{
+	"auth": {
+		"famphotos82c8db06": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": [],
+			"customAuth": false
+		}
+	}
+}
