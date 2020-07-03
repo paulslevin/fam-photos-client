@@ -4,7 +4,7 @@
 }
 
 .ViewFamily .pics {
-  padding: 80px 0;
+  padding: 60px 0;
   text-align: center;
 }
 
@@ -15,4 +15,9 @@
 
 .ViewFamily .lander p {
   color: #999;
+}
+
+.ViewFamily .pics .caption {
+  padding: 20px 0;
+  font-weight: bold;
 }

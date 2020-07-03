@@ -2,19 +2,19 @@ import React, { useState, useEffect } from "react";
 import "./ViewFamily.css";
 import { useAppContext } from "../libs/contextLib";
 import windowSize from "react-window-size";
-import { imageURLsByFamilyURL } from "../constants/Constants";
+import { imageDataByFamilyURL } from "../constants/Constants";
 
 function ViewFamily(props) {
   const { families } = useAppContext();
   const path = props.location.pathname.split("/");
   const family = path[path.length - 1];
   const isFamilyValid = families.includes(family);
-  const [imageURLs, setImageURLs] = useState([]);
+  const [imagesData, setImagesData] = useState([]);
   const { isAuthenticated } = useAppContext();
 
   useEffect(() => {
     function getImageURLsByFamily() {
-      fetch(new URL(imageURLsByFamilyURL), {
+      fetch(new URL(imageDataByFamilyURL), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -24,8 +24,7 @@ function ViewFamily(props) {
       })
         .then((response) => response.json())
         .then((data) => {
-          setImageURLs(data);
-          console.log(data);
+          setImagesData(data);
         });
     }
     getImageURLsByFamily();
@@ -38,13 +37,22 @@ function ViewFamily(props) {
     return <p>View {family} photos below!</p>;
   }
 
+  function renderImage(imageData, index) {
+    return (
+      <>
+        <div className="pics" key={index}>
+          <img src={imageData.url} width={props.windowWidth / 2} alt="" />
+          <p className="caption">{imageData.caption}</p>
+        </div>
+      </>
+    );
+  }
+
   function renderPics() {
     if (isAuthenticated) {
-      return imageURLs.map((imageURL, index) => (
-        <div className="pics" key={index}>
-          <img src={imageURL} width={props.windowWidth / 2} alt="" />
-        </div>
-      ));
+      return imagesData.map((imageData, index) =>
+        renderImage(imageData, index)
+      );
     }
   }
 
