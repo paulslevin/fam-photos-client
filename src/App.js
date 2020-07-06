@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Nav, Navbar, NavItem } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
@@ -7,22 +7,58 @@ import Routes from "./Routes";
 import { AppContext } from "./libs/contextLib";
 import Amplify from "aws-amplify";
 import awsconfig from "./aws-exports";
+import { useStateWithSessionStorage } from "./libs/hooksLib";
+import { imageDataByFamilyURL } from "./constants/Constants";
 Amplify.configure(awsconfig);
 
 function App() {
   const history = useHistory();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userName, setUsername] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [families, setFamilies] = useState([]);
+  const [isAuthenticated, setIsAuthenticated] = useStateWithSessionStorage(
+    false,
+    "isAuthenticated"
+  );
+  const [username, setUsername] = useStateWithSessionStorage(false, "username");
+  const [firstName, setFirstName] = useStateWithSessionStorage(
+    false,
+    "firstName"
+  );
+  const [families, setFamilies] = useStateWithSessionStorage([], "families");
+  const [imageDataByFamily, setImageDataByFamily] = useStateWithSessionStorage(
+    {},
+    "imageDataByFamily"
+  );
 
   function handleLogout() {
     setIsAuthenticated(false);
     setFirstName("");
     setUsername("");
-    setFamilies("");
+    setFamilies([]);
+    setImageDataByFamily({});
     history.push("/login");
   }
+
+  useEffect(() => {
+    function getImageDataByFamily() {
+      let newData = {};
+      families.forEach((family) => {
+        fetch(new URL(imageDataByFamilyURL), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(family),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            Object.assign(newData, { [family]: data });
+            console.log("New data (post-merge) for", family, "is", newData);
+          });
+      });
+      setImageDataByFamily(newData);
+    }
+    getImageDataByFamily();
+  }, [families, setImageDataByFamily]);
 
   return (
     <div className="App container">
@@ -61,10 +97,12 @@ function App() {
           setIsAuthenticated,
           firstName,
           setFirstName,
-          userName,
+          username,
           setUsername,
           families,
           setFamilies,
+          imageDataByFamily,
+          setImageDataByFamily,
         }}
       >
         <Routes />

@@ -1,34 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./ViewFamily.css";
 import { useAppContext } from "../libs/contextLib";
 import windowSize from "react-window-size";
-import { imageDataByFamilyURL } from "../constants/Constants";
 
 function ViewFamily(props) {
   const { families } = useAppContext();
   const path = props.location.pathname.split("/");
   const family = path[path.length - 1];
   const isFamilyValid = families.includes(family);
-  const [imagesData, setImagesData] = useState([]);
   const { isAuthenticated } = useAppContext();
-
-  useEffect(() => {
-    function getImageURLsByFamily() {
-      fetch(new URL(imageDataByFamilyURL), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(family),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setImagesData(data);
-        });
-    }
-    getImageURLsByFamily();
-  }, [family]);
+  const { imageDataByFamily } = useAppContext();
 
   function renderWelcome() {
     if (isFamilyValid === false) {
@@ -49,8 +30,8 @@ function ViewFamily(props) {
   }
 
   function renderPics() {
-    if (isAuthenticated) {
-      return imagesData.map((imageData, index) =>
+    if (isAuthenticated && family in imageDataByFamily) {
+      return imageDataByFamily[family].map((imageData, index) =>
         renderImage(imageData, index)
       );
     }

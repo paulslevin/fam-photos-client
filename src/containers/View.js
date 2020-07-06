@@ -14,7 +14,7 @@ export default function View() {
         <p>View photos here</p>
       </div>
       <div className="albums">
-        {families.map((family, index) => (
+        {families.map((family, _) => (
           <LinkContainer key={family} to={`/viewfamily/${family}`}>
             <ListGroupItem>
               <h4>

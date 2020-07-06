@@ -26,7 +26,7 @@ export default function Login() {
     return fields.email.length > 0 && fields.password.length > 0;
   }
 
-  function getFirstName() {
+  async function getFirstName() {
     fetch(new URL(firstNameURL), {
       method: "POST",
       headers: {
@@ -39,7 +39,7 @@ export default function Login() {
       .then((data) => setFirstName(data));
   }
 
-  function getFamilies() {
+  async function getFamilies() {
     fetch(new URL(familesURL), {
       method: "POST",
       headers: {
@@ -58,8 +58,8 @@ export default function Login() {
       await Auth.signIn(fields.email, fields.password);
       setIsAuthenticated(true);
       setUsername(fields.email);
-      getFirstName();
-      getFamilies();
+      await getFirstName();
+      await getFamilies();
       history.push("/");
     } catch (e) {
       onError(e);
