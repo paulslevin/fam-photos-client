@@ -52,7 +52,6 @@ function App() {
           .then((response) => response.json())
           .then((data) => {
             Object.assign(newData, { [family]: data });
-            console.log("New data (post-merge) for", family, "is", newData);
           });
       });
       setImageDataByFamily(newData);
